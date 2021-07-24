@@ -3,16 +3,30 @@ var ctx = c.getContext("2d");
 
 // variables
 var notew = 100, noteh = 30
-var l1 = (canvas.width - (notew * 6)) / 2, l2 = l1 + notew, l3 = l2 + notew, l4 = l3 + notew, l5 = l4 + notew; //, LANE2 = LANE1 + notew, LANE3 = LANE2 + notew, LANE4 = LANE3 + notew, LANE5 = LANE4 + notew;
-// var note = {x:l1, y:0}
+var notespeed = 5;
+
+var line = (canvas.height - noteh*4);
+
+var l1 = (canvas.width - (notew * 6)) / 2, l2 = l1 + notew, l3 = l2 + notew, l4 = l3 + notew, l5 = l4 + notew;
+
 var notes = [
-	{x:l1, y:0, active:true}, {x:l2, y:-100, active:true}
+	{x:l1, y:0, sec: 6.34, active:false}, 
+	// {x:l2, y:0, sec: 7.67, active:false}, 
+	// {x:l3, y:0, sec: 8.95, ctive:false}, 
+	// {x:l4, y:0, sec: 10.17, active:false}, 
 ];
+function secToPx(s)
+{
+	// console.log(notespeed/(1000/60))
+	offset = line - (s * 1000 * (notespeed/(1000/60)));
+	offset = Math.round(offset);
+	console.log(`line pos: ${line}`)
+	console.log(`offset: ${offset}`);
+	return offset;
+}
 
 var canvasbg = new Image()
 canvasbg.src = 'yukina2.png';
-
-var notespeed = 3;
 
 var hitnotes = 0;
 var missnotes = 0;
@@ -21,21 +35,78 @@ var game_started = false;
 
 setup()
 
+var startTime = 0;
+var elapsedTime = 0;
+function gameloop()
+{
+	elapsedTime = performance.now() - startTime;
+	// console.log(`hhh time passed: ${elapsedTime}`);
+
+	updateNotes(elapsedTime);
+}
+
+// var interval = 1000/60; // ms
+// var timer = 0;
+// var expected = Date.now() + interval;
+// function step(terminator = false)
+// {
+// 	var dt = Date.now() - expected; // the drift (positive for overshooting)
+// 	if (dt > interval) {
+// 		//
+// 	}
+
+// 	updateNotes();
+// 	draw();
+
+// 	expected += interval;
+// 	setTimeout(step, Math.max(0, interval - dt)); // take into account drift
+// }
+
+
 function setup()
 {
 	drawSetup();
 	var music = new Audio('R.ogg');
+	music.volume = 0.05;
 
 	let playAttempt = setInterval(() => {
 		music.play()
 		  .then(() => {
 			clearInterval(playAttempt);
-			setInterval(draw, 10)
+			startTime = performance.now()
+			setInterval(gameloop, 1000/60);
+			setInterval(draw, 1000/60);
+			// setinterval(update, 1000/60);
+			// timer = setTimeout(step, interval);
 		  })
 		  .catch(error => {
-			console.log('Unable to play the video, User has not interacted yet.');
+			// console.log('Unable to play the video, User has not interacted yet.');
 		  });
 	  }, 1);	  
+}
+
+function updateNotes(elapsedTime)
+{
+	timeInSec = elapsedTime / 1000;
+	timeToPass = line/(notespeed*60);
+	for (var j = 0; j < notes.length; j++)
+	{
+		diff = notes[j].sec - timeInSec;
+		if (timeInSec + timeToPass >= notes[j].sec && diff >= -1)
+		{
+			// console.log('hello there');
+			px = line * diff / timeToPass;
+			notes[j].y = px;
+
+			console.log(`note ${j}!!!! time rn: ${timeInSec}, timetopass: ${timeToPass}, diff: ${diff}, px: ${px}`);
+		}
+		// notes[j].y = 
+	}
+}
+
+function update()
+{
+	updateNotes();
 }
 
 function drawSetup()
@@ -55,9 +126,6 @@ function drawSetup()
 		ctx.fillText("Click to start", canvas.width/2, canvas.height/2 + 50)
 	}
 	// ctx.globalAlpha = 1;
-
-	
-
 }
 
 function drawCanvasbg()
@@ -79,8 +147,6 @@ function drawNotes()
 			ctx.fill();
 			ctx.closePath();
 		}
-
-		notes[j].y += notespeed;
 	}
 }
 
@@ -88,7 +154,7 @@ function drawLine()
 {
 	ctx.globalAlpha = 0.5;
 	ctx.beginPath();
-	ctx.rect(0, canvas.height - noteh*4, canvas.width, noteh);
+	ctx.rect(0, line, canvas.width, noteh);
 	ctx.fillStyle = "#000000";
 	ctx.fill();
 	ctx.closePath();
@@ -96,7 +162,7 @@ function drawLine()
 	for (var j = 0; j < 5; j++)
 	{
 		ctx.beginPath();
-		ctx.rect((canvas.width - (notew * 6)) / 2 + j*notew, canvas.height - noteh*4, notew, noteh);
+		ctx.rect((canvas.width - (notew * 6)) / 2 + j*notew, line, notew, noteh);
 		if (j % 2 == 0)
 			ctx.fillStyle = "#4d8bf0";
 		else
@@ -115,7 +181,7 @@ function drawScore()
 	ctx.textAlign = "center";
 
 	ctx.globalAlpha = 0.7;
-	// ctx.fillText("*Yukina noises*", canvas.width/2, canvas.height/2 + 30);
+	ctx.fillText("*Yukina noises*", canvas.width/2, canvas.height/2 + 30);
 	ctx.globalAlpha = 1;
 
 	ctx.fillText("Hit: " + hitnotes, 50, 30);
@@ -164,7 +230,7 @@ function insideRect(x, y, rx, rw, ry, rh)
 function collisionCheck(coords)
 {
 	// if click is inside the line
-	if (insideRect(coords.x, coords.y, 0, canvas.width, canvas.height - noteh*4, canvas.height - noteh*3))
+	if (insideRect(coords.x, coords.y, 0, canvas.width, line, canvas.height - noteh*3))
 	{
 		// console.log('clicked inside line')
 		lane = getLane(coords);
@@ -176,12 +242,12 @@ function collisionCheck(coords)
 			if (getLane({x: note.x}) == lane)
 			{
 				console.log(`correct lane`)
-				if (note.y < canvas.height - noteh*4 || note.y > canvas.height - noteh*3)
+				if (note.y < line || note.y > canvas.height - noteh*3)
 				{
 					missnotes += 1;
 					note.active = false;
 				}
-				else if (insideRect(note.x, note.y, 0, canvas.width, canvas.height - noteh*4, canvas.height - noteh*3))
+				else if (insideRect(note.x, note.y, 0, canvas.width, line, canvas.height - noteh*3))
 				{
 					hitnotes += 1;
 					note.active = false;
@@ -193,21 +259,21 @@ function collisionCheck(coords)
 
 function getCursorPosition(canvas, event)
 {
-    var rect = canvas.getBoundingClientRect()
-    var x = event.clientX - rect.left
-    var y = event.clientY - rect.top
-    console.log("x: " + x + " y: " + y)
+	var rect = canvas.getBoundingClientRect()
+	var x = event.clientX - rect.left
+	var y = event.clientY - rect.top
+	console.log("x: " + x + " y: " + y)
 	return {x: x, y: y}
 }
 
 c.addEventListener('mousedown', function(e)
 {
-    coords = getCursorPosition(canvas, e)
+	coords = getCursorPosition(canvas, e)
 	collisionCheck(coords)
 })
 
 c.addEventListener('touchstart', function(e)
 {
-    coords = getCursorPosition(canvas, e)
+	coords = getCursorPosition(canvas, e)
 	collisionCheck(coords)
 })
