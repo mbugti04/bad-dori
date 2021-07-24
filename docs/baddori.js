@@ -50,7 +50,7 @@ function setup()
 {
 	drawSetup();
 	var music = new Audio('R.ogg');
-	music.volume = 0.05;
+	music.volume = 0.5;
 
 	let playAttempt = setInterval(() => {
 		music.play()
