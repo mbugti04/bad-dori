@@ -271,12 +271,12 @@ c.addEventListener('mousedown', function(e)
 	collisionCheck(coords)
 })
 
-c.addEventListener('touchstart', function(e)
-{
-	// coords = getCursorPosition(canvas, e)
-	clientX = e.touches[0].clientX;
-  	clientY = e.touches[0].clientY;
-	// coords = {x: e.touches.clientX, y: e.touches.clientY}
-	coords = {x: clientX, y: clientY}
-	collisionCheck(coords)
-})
+// c.addEventListener('touchstart', function(e)
+// {
+// 	// coords = getCursorPosition(canvas, e)
+// 	clientX = e.touches[0].clientX;
+//   	clientY = e.touches[0].clientY;
+// 	// coords = {x: e.touches.clientX, y: e.touches.clientY}
+// 	coords = {x: clientX, y: clientY}
+// 	collisionCheck(coords)
+// })
