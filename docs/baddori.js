@@ -3,8 +3,11 @@ var ctx = c.getContext("2d");
 
 // variables
 var notew = 100, noteh = 30
-var l1 = (canvas.width - (notew * 6)) / 2, l2 = l1 + notew, l3 = l2 + notew, l4 = l3 + notew, l5 = l4 + note; //, LANE2 = LANE1 + notew, LANE3 = LANE2 + notew, LANE4 = LANE3 + notew, LANE5 = LANE4 + notew;
-var note = {x:l1, y:0}
+var l1 = (canvas.width - (notew * 6)) / 2, l2 = l1 + notew, l3 = l2 + notew, l4 = l3 + notew, l5 = l4 + notew; //, LANE2 = LANE1 + notew, LANE3 = LANE2 + notew, LANE4 = LANE3 + notew, LANE5 = LANE4 + notew;
+// var note = {x:l1, y:0}
+var notes = [
+	{x:l1, y:0}, {x:l2, y:-100}
+];
 
 var canvasbg = new Image()
 canvasbg.src = 'yukina2.png';
@@ -27,13 +30,16 @@ function drawCanvasbg()
 
 function drawNotes()
 {
-	ctx.beginPath();
-    ctx.rect(note.x, note.y, notew, noteh);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
+	for (var j = 0; j < notes.length; j++)
+	{
+		ctx.beginPath();
+		ctx.rect(notes[j].x, notes[j].y, notew, noteh);
+		ctx.fillStyle = "#0095DD";
+		ctx.fill();
+		ctx.closePath();
 
-	note.y += notespeed;
+		notes[j].y += notespeed;
+	}
 }
 
 function draw()
