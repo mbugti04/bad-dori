@@ -267,12 +267,16 @@ function getCursorPosition(canvas, event)
 c.addEventListener('mousedown', function(e)
 {
 	coords = getCursorPosition(canvas, e)
-	console.log(`${elapsedTime/1000}`);
+	// console.log(`${elapsedTime/1000}`);
 	collisionCheck(coords)
 })
 
 c.addEventListener('touchstart', function(e)
 {
-	coords = getCursorPosition(canvas, e)
+	// coords = getCursorPosition(canvas, e)
+	clientX = e.touches[0].clientX;
+  	clientY = e.touches[0].clientY;
+	// coords = {x: e.touches.clientX, y: e.touches.clientY}
+	coords = {x: clientX, y: clientY}
 	collisionCheck(coords)
 })
