@@ -205,3 +205,9 @@ c.addEventListener('mousedown', function(e)
     coords = getCursorPosition(canvas, e)
 	collisionCheck(coords)
 })
+
+c.addEventListener('touchstart', function(e)
+{
+    coords = getCursorPosition(canvas, e)
+	collisionCheck(coords)
+})
